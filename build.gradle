@@ -1,0 +1,69 @@
+// plugins block needs to be the top level statement in project's build scripts (only buildscripts{} block is allowed before it)
+plugins {
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+}
+
+group 'com.elasticsearch'
+version '1.0-SNAPSHOT'
+
+// sourceCompatibility = specifies that version of the Java programming language be used to compile .java files.
+// e.g sourceCompatibility 1.6 =specifies that version 1.6 of the Java programming language be used to compile .java files.
+// https://stackoverflow.com/a/29519066/10393067
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "Hoxton.SR8")
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.7.RELEASE'
+    implementation group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.1.9.RELEASE'
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-sts', version: '1.11.632'
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.632'
+    compileOnly 'org.projectlombok:lombok'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-aws-messaging', version: '2.2.4.RELEASE'
+
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootJar {
+    archiveFileName = "elasticsearch.jar"
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs 'src/main/conf/dev'
+            srcDirs 'src/main/conf/test'
+        }
+    }
+}
